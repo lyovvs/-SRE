@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: your-app-deployment
+spec:
+  replicas: 4  # Число реплик приложения
+  selector:
+    matchLabels:
+      app: your-app
+  template:
+    metadata:
+      labels:
+        app: your-app
+    spec:
+      containers:
+      - name: your-app-container
+        image: your-app-image:latest
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"  # Первоначальное значение для CPU
+          limits:
+            memory: "128Mi"
+            cpu: "1000m"  # Максимальное значение для CPU
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10  # Подождать, чтобы дать приложению инициализироваться
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 30  # Подождать после старта, чтобы убедиться, что приложение живо
+          periodSeconds: 10
